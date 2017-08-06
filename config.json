@@ -1,0 +1,9 @@
+{
+    "sites": [
+        {
+            "website": "site exemplo", 
+            "from": "/var/www/teste/", 
+            "to": "/var/www/teste.backup/"
+        }
+    ]
+}
