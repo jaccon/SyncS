@@ -6,36 +6,54 @@ import sys
 
 current_date = time.strftime("%d.%m.%Y_%H%M%S")
 count = 0
-log_file = '/var/www/syncs/logs/'+current_date+'.log'
-
+script_path = (os.path.dirname(os.path.realpath(__file__)))
 parser = argparse.ArgumentParser()
 parser.add_argument("-t", "--type", default = "choose daily | weekly | monthly ", help="configuration file")
 args = parser.parse_args()
-
 os.system('tput clear')
-print "### SyncS / Security Backup Tool ### "
-print "developed by @jaccon | this is another Open Source script "
+
+# colors
+class text_colors:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+
+
+print text_colors.WARNING + " Sync Server script v 2.0.1" + text_colors.ENDC
+print "Use: python syncs.py --type daily"
 print('')
 
 print( "Processing type...  {} ".format(
         args.type
         ))
 
-config_file = 'config/'+args.type+'.json'
+config_file = script_path+'/backups.json'
 
-with open(config_file) as json_file:  
+print "Parser file: "+config_file
+print ""
+print ""
+
+with open(config_file) as json_file:
     data = json.load(json_file)
     for p in data['sites']:
         count=count+1
-        print count
-        print('site: ' + p['website'])
-        print('source: ' + p['from'])
-        print('destination: ' + p['to'])
-        print ('')
-        print ('backup in progress.... please waiting....')
-        print ('')
-        print ('')
+        def beep():
+                print "\a"
+        beep()
+        beep()
+        beep()
+        status =  p['status']
+    if status == "enable":
+        #print count
+        print 'Backup reference: ' + p['reference']
         # execute command
-        os.system('rsync -Cravz --progress --delete-excluded '+p['from']+' '+p['to']+' --log-file='+log_file)
+        to = p['to'] +'/'+args.type+'/'
+        log_file = script_path+'/logs/'+args.type+'/'+p['reference'] + '_' +current_date+'.log'
+        os.system('rsync -Cravz --progress --delete-excluded '+p['from']+' '+to+' --log-file='+log_file)
         print('')
-        sys.exit()
+        print('')
